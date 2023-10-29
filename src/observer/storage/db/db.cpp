@@ -103,7 +103,7 @@ RC Db::create_table(const char *table_name, int attribute_count, const AttrInfoS
 
 Table *Db::find_table(const char *table_name) const
 {
-  std::unordered_map<std::string, Table *>::const_iterator iter = opened_tables_.find(table_name);
+  auto iter = opened_tables_.find(table_name);
   if (iter != opened_tables_.end()) {
     return iter->second;
   }
@@ -193,4 +193,22 @@ RC Db::recover()
 CLogManager *Db::clog_manager()
 {
   return clog_manager_.get();
+}
+RC Db::drop_table(const char *table_name) {
+    RC rc = RC::SUCCESS;
+    Table *table = find_table(table_name);
+    if (nullptr == table) {
+        LOG_WARN("no such table. table_name=%s", table_name);
+        return RC::SCHEMA_TABLE_NOT_EXIST;
+    }
+
+    rc = table->drop();
+    if (rc != RC::SUCCESS) {
+        LOG_WARN("failed to drop table. table_name=%s, rc=%d:%s", table_name, rc, strrc(rc));
+        return rc;
+    }
+
+    opened_tables_.erase(table_name);
+    delete table;
+    return rc;
 }

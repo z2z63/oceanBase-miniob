@@ -94,7 +94,7 @@ RC FilterStmt::create_filter_unit(Db *db, Table *default_table, std::unordered_m
     Table *table = nullptr;
     const FieldMeta *field = nullptr;
     rc = get_table_and_field(db, default_table, tables, condition.left_attr, table, field);
-    if (rc != RC::SUCCESS) {
+    if (rc != RC::SUCCESS) {  // 检查字段是否存在
       LOG_WARN("cannot find attr");
       return rc;
     }
