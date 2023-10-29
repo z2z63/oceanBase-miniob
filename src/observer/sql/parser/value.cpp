@@ -13,6 +13,7 @@ See the Mulan PSL v2 for more details. */
 //
 
 #include <sstream>
+#include <regex>
 #include "sql/parser/value.h"
 #include "storage/field/field.h"
 #include "common/log/log.h"
@@ -325,7 +326,6 @@ bool Value::check_date(int y, int m, int d)
   return y > 0 && (m > 0) && (m <= 12) && (d > 0) && (d <= ((m == 2 && leap) ? 1 : 0) + mon[m]);
 }
 
-
 int date2int(std::string &str, int len)
 {
   int year, month, day;
@@ -356,4 +356,51 @@ bool isComparable(AttrType &left, AttrType &right)
     return true;
   }
   return false;
+}
+
+/**
+ * SQL的like语法，支持`%`和`_`通配符
+ * */
+bool Value::is_like(const Value &left, const Value &right)
+{
+  if (left.attr_type_ != CHARS || right.attr_type_ != CHARS) {
+    LOG_WARN("unsupported type. left=%s, right=%s", ATTR_TYPE_NAME[left.attr_type_], ATTR_TYPE_NAME[right.attr_type_]);
+    return false;
+  }
+  std::string like    = right.get_string();
+  std::string str     = left.get_string();
+  std::string pattern = like2regex(like);
+  std::regex  reg(pattern);
+  return std::regex_match(str, reg);
+}
+
+void replace_all(std::string &str, const std::string &old_value, const std::string &new_value)
+{
+  std::string::size_type pos = 0;
+  while ((pos = str.find(old_value, pos)) != std::string::npos) {
+    str.replace(pos, old_value.size(), new_value);
+    pos += new_value.size() - old_value.size() + 1;
+  }
+}
+
+std::string like2regex(const std::string &like_source)
+{
+  std::string like = like_source;
+  replace_all(like, ".", "\\.");
+  replace_all(like, "^", "\\^");
+  replace_all(like, "$", "\\$");
+  replace_all(like, "+", "\\+");
+  replace_all(like, "?", "\\?");
+  replace_all(like, "(", "\\(");
+  replace_all(like, ")", "\\)");
+  replace_all(like, "{", "\\{");
+  replace_all(like, "}", "\\}");
+  replace_all(like, "\\", "\\\\");
+  replace_all(like, "|", "\\|");
+  replace_all(like, ".", "\\.");
+  replace_all(like, "*", "\\*");
+
+  replace_all(like, "%", "[^']*");
+  replace_all(like, "_", "[^']");
+  return "^" + like + "$";
 }

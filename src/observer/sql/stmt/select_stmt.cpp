@@ -43,7 +43,7 @@ RC SelectStmt::create(Db *db, const SelectSqlNode &select_sql, Stmt *&stmt)
     return RC::INVALID_ARGUMENT;
   }
 
-  // 收集FROM的表名
+  // 收集from的表名
   std::vector<Table *> tables;
   std::unordered_map<std::string, Table *> table_map;
   for (size_t i = 0; i < select_sql.relations.size(); i++) {

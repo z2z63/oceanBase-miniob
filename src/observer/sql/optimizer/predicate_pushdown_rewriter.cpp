@@ -101,7 +101,7 @@ RC PredicatePushdownRewriter::get_exprs_can_pushdown(
     // 如果是比较操作，并且比较的左边或右边是表某个列值，那么就下推下去
     auto comparison_expr = static_cast<ComparisonExpr *>(expr.get());
     CompOp comp = comparison_expr->comp();
-    if (comp != EQUAL_TO) {
+    if (comp != CompOp::EQUAL_TO) {
       // 简单处理，仅取等值比较。当然还可以取一些范围比较，还有 like % 等操作
       // 其它的还有 is null 等
       return rc;

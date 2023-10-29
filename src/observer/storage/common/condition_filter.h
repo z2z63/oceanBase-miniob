@@ -76,7 +76,7 @@ private:
   ConDesc left_;
   ConDesc right_;
   AttrType attr_type_ = UNDEFINED;
-  CompOp comp_op_ = NO_OP;
+  CompOp comp_op_ = CompOp::NO_OP;
 };
 
 class CompositeConditionFilter : public ConditionFilter 

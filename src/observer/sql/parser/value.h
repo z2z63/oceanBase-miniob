@@ -88,6 +88,8 @@ public:
   bool        get_boolean() const;
   static bool check_date(int y, int m, int d);
 
+  static bool is_like(const Value &s, const Value &pattern);
+
 private:
   AttrType attr_type_ = UNDEFINED;
   int      length_    = 0;
@@ -108,3 +110,6 @@ std::string int2date(int dateIntValue);
 
 bool isComparable(AttrType &left, AttrType &right);
 
+void replace_all(std::string &str, const std::string &old_value, const std::string &new_value);
+
+std::string like2regex(const std::string &like_source);
