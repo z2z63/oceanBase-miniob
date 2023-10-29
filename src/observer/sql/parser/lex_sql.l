@@ -73,7 +73,7 @@ QUOTE            [\'\"]
 
 /* yylval 就可以认为是 yacc 中 %union 定义的结构体(union 结构) */
 %%
-
+NOT{WHITE_SAPCE}LIKE                    RETURN_TOKEN(NOT_LIKE);     // not like中间有空格，必须先匹配not like再匹配空格
 {WHITE_SAPCE}                                        // ignore whitespace
 \n                                                   ;
 

@@ -53,6 +53,7 @@ enum class CompOp
   GREAT_EQUAL,  ///< ">="
   GREAT_THAN,   ///< ">"
   LIKE,         ///< "like"
+  NOT_LIKE,     ///< "not like"
 
   NO_OP        ///< 必须放在最后，不要动
 };
