@@ -30,14 +30,14 @@ RC InsertStmt::create(Db *db, const InsertSqlNode &inserts, Stmt *&stmt)
     return RC::INVALID_ARGUMENT;
   }
 
-  // check whether the table exists
+  // 检查表是否存在
   Table *table = db->find_table(table_name);
   if (nullptr == table) {
     LOG_WARN("no such table. db=%s, table_name=%s", db->name(), table_name);
     return RC::SCHEMA_TABLE_NOT_EXIST;
   }
 
-  // check the fields number
+  // 检查字段数目是否匹配
   const Value *values = inserts.values.data();
   const int value_num = static_cast<int>(inserts.values.size());
   const TableMeta &table_meta = table->table_meta();
@@ -47,7 +47,7 @@ RC InsertStmt::create(Db *db, const InsertSqlNode &inserts, Stmt *&stmt)
     return RC::SCHEMA_FIELD_MISSING;
   }
 
-  // check fields type
+  // 检查每个字段的类型是否匹配
   const int sys_field_num = table_meta.sys_field_num();
   for (int i = 0; i < value_num; i++) {
     const FieldMeta *field_meta = table_meta.field(i + sys_field_num);

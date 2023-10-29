@@ -194,7 +194,7 @@ RC RecordPageHandler::insert_record(const char *data, RID *rid)
   // 找到空闲位置
   Bitmap bitmap(bitmap_, page_header_->record_capacity);
   int    index = bitmap.next_unsetted_bit(0);
-  bitmap.set_bit(index);
+  bitmap.set_bit(index);  // 更新位图，占据这个位置
   page_header_->record_num++;
 
   // assert index < page_header_->record_capacity
@@ -203,7 +203,7 @@ RC RecordPageHandler::insert_record(const char *data, RID *rid)
 
   frame_->mark_dirty();
 
-  if (rid) {
+  if (rid) {  // 向Frame中写入了记录，返回记录的id
     rid->page_num = get_page_num();
     rid->slot_num = index;
   }
@@ -359,6 +359,7 @@ RC RecordFileHandler::insert_record(const char *data, int record_size, RID *rid)
   lock_.lock();
 
   // 找到没有填满的页面
+  // 记录可能很长，不能持有锁的同时大量访问磁盘，所以先在PageHeader占有一个记录的槽，然后释放锁
   while (!free_pages_.empty()) {
     current_page_num = *free_pages_.begin();
 

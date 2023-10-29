@@ -97,6 +97,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
         LE
         GE
         NE
+        DATE_T
 
 /** union 中定义各种数据类型，真实生成的代码也是union类型，所以不能有非POD类型的数据 **/
 %union {
@@ -122,6 +123,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 %token <floats> FLOAT
 %token <string> ID
 %token <string> SSS
+%token <string> DATE_STR
 //非终结符
 
 /** type 定义了各种解析后的结果输出的是什么类型。类型对应了 union 中的定义的成员变量名称 **/
@@ -338,6 +340,7 @@ number:
     ;
 type:
     INT_T      { $$=INTS; }
+    | DATE_T   { $$=DATES; }
     | STRING_T { $$=CHARS; }
     | FLOAT_T  { $$=FLOATS; }
     ;
@@ -379,6 +382,20 @@ value:
     |FLOAT {
       $$ = new Value((float)$1);
       @$ = @1;
+    }
+    |DATE_STR{
+      char *tmp = common::substr($1,1,strlen($1)-2);
+      $$ = new Value(tmp, true);
+      int t = $$->get_int();
+      int year = t / 10000;
+      int month = (t % 10000) / 100;
+      int day = t % 100;
+      if(not Value::check_date(year, month, day)) {
+	free(tmp);
+	yyerror(&yylloc, sql_string, sql_result, scanner, "invalid date");
+	YYERROR;
+      }
+      free(tmp);
     }
     |SSS {
       char *tmp = common::substr($1,1,strlen($1)-2);

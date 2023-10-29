@@ -157,6 +157,7 @@ RC PlainCommunicator::write_debug(SessionEvent *request, bool &need_disconnect)
 
 RC PlainCommunicator::write_result(SessionEvent *event, bool &need_disconnect)
 {
+  // 先写到Frame中
   RC rc = write_result_internal(event, need_disconnect);
   if (!need_disconnect) {
     (void)write_debug(event, need_disconnect);
@@ -186,6 +187,7 @@ RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disc
   const TupleSchema &schema = sql_result->tuple_schema();
   const int cell_num = schema.cell_num();
 
+  // 输出表头给客户端，只有返回数据时才执行
   for (int i = 0; i < cell_num; i++) {
     const TupleCellSpec &spec = schema.cell_at(i);
     const char *alias = spec.alias();
@@ -221,6 +223,7 @@ RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disc
 
   rc = RC::SUCCESS;
   Tuple *tuple = nullptr;
+  // 输出行数据给客户端
   while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) {
     assert(tuple != nullptr);
 
@@ -261,7 +264,7 @@ RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disc
     }
   }
 
-  if (rc == RC::RECORD_EOF) {
+  if (rc == RC::RECORD_EOF) {   // 读取完毕
     rc = RC::SUCCESS;
   }
 

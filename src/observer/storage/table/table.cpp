@@ -185,12 +185,13 @@ RC Table::open(const char *meta_file, const char *base_dir)
 RC Table::insert_record(Record &record)
 {
   RC rc = RC::SUCCESS;
+  // 插入数据，写入到Frame中
   rc = record_handler_->insert_record(record.data(), table_meta_.record_size(), &record.rid());
   if (rc != RC::SUCCESS) {
     LOG_ERROR("Insert record failed. table name=%s, rc=%s", table_meta_.name(), strrc(rc));
     return rc;
   }
-
+  // 插入数据后，重新编制索引
   rc = insert_entry_of_indexes(record.data(), record.rid());
   if (rc != RC::SUCCESS) { // 可能出现了键值重复
     RC rc2 = delete_entry_of_indexes(record.data(), record.rid(), false/*error_on_not_exists*/);

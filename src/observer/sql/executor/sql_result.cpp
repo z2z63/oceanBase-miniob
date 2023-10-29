@@ -49,7 +49,7 @@ RC SqlResult::close()
 
   operator_.reset();
 
-  if (session_ && !session_->is_trx_multi_operation_mode()) {
+  if (session_ && !session_->is_trx_multi_operation_mode()) {   // 单SQL模式下，自动提交或回滚
     if (rc == RC::SUCCESS) {
       rc = session_->current_trx()->commit();
     } else {

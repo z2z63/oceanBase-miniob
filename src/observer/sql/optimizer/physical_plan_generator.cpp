@@ -127,7 +127,7 @@ RC PhysicalPlanGenerator::create_plan(TableGetLogicalOperator &table_get_oper, u
     }
   }
 
-  if (index != nullptr) {
+  if (index != nullptr) {   // 查看是否有索引可以用
     ASSERT(value_expr != nullptr, "got an index but value expr is null ?");
 
     const Value &value = value_expr->get_value();

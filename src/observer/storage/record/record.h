@@ -28,7 +28,7 @@ See the Mulan PSL v2 for more details. */
 class Field;
 
 /**
- * @brief 标识一个记录的位置
+ * @brief 标识一个记录的位置,RID在一个文件中是唯一的
  * 一个记录是放在某个文件的某个页面的某个槽位。这里不记录文件信息，记录页面和槽位信息
  */
 struct RID

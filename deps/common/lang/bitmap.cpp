@@ -35,7 +35,9 @@ int find_first_setted(char byte, int start)
   }
   return -1;
 }
-
+/**
+ * size个bit需要多少个byte来存储
+ * */
 int bytes(int size)
 {
   return size % 8 == 0 ? size / 8 : size / 8 + 1;
@@ -73,13 +75,13 @@ void Bitmap::clear_bit(int index)
 int Bitmap::next_unsetted_bit(int start)
 {
   int ret = -1;
-  int start_in_byte = start % 8;
-  for (int iter = start / 8, end = bytes(size_); iter < end; iter++) {
+  int start_in_byte = start % 8;  // 比特内的偏移量
+  for (int iter = start / 8, end = bytes(size_); iter < end; iter++) {  // 遍历字节
     char byte = bitmap_[iter];
-    if (byte != -1) {
+    if (byte != -1) {   // 有0
       int index_in_byte = find_first_zero(byte, start_in_byte);
       if (index_in_byte >= 0) {
-        ret = iter * 8 + index_in_byte;
+        ret = iter * 8 + index_in_byte; // 0相对于整个bitmap的偏移量，单位是bit
         break;
       }
 
