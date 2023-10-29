@@ -126,6 +126,9 @@ RC FilterStmt::create_filter_unit(Db *db, Table *default_table, std::unordered_m
 
   filter_unit->set_comp(comp);
 
-  // 检查两个类型是否能够比较
+  if(!filter_unit->checkComparable()) {   // 检查两个类型是否能够比较
+    LOG_WARN("cannot compare");
+    return RC::INVALID_ARGUMENT;
+  }
   return rc;
 }

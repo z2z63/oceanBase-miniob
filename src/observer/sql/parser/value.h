@@ -106,3 +106,5 @@ int date2int(std::string &str, int len);
 
 std::string int2date(int dateIntValue);
 
+bool isComparable(AttrType &left, AttrType &right);
+

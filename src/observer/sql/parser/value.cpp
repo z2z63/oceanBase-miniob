@@ -293,7 +293,7 @@ bool Value::get_boolean() const
     case BOOLEANS: {
       return num_value_.bool_value_;
     } break;
-    case DATES:{
+    case DATES: {
       throw std::runtime_error("埋点1");
     }
     default: {
@@ -318,6 +318,14 @@ void Value::set_date(const char *s, int len)
   length_                = sizeof(num_value_.date_value_);
 }
 
+bool Value::check_date(int y, int m, int d)
+{
+  static int mon[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  bool       leap  = (y % 400 == 0 || (y % 100 && y % 4 == 0));
+  return y > 0 && (m > 0) && (m <= 12) && (d > 0) && (d <= ((m == 2 && leap) ? 1 : 0) + mon[m]);
+}
+
+
 int date2int(std::string &str, int len)
 {
   int year, month, day;
@@ -329,13 +337,6 @@ int date2int(std::string &str, int len)
   return year * 10000 + month * 100 + day;
 }
 
-bool Value::check_date(int y, int m, int d)
-{
-  static int mon[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-  bool       leap  = (y % 400 == 0 || (y % 100 && y % 4 == 0));
-  return y > 0 && (m > 0) && (m <= 12) && (d > 0) && (d <= ((m == 2 && leap) ? 1 : 0) + mon[m]);
-}
-
 std::string int2date(int dateIntValue)
 {
   int  year  = dateIntValue / 10000;
@@ -345,4 +346,14 @@ std::string int2date(int dateIntValue)
   snprintf(temp, sizeof(temp), "%d-%02d-%02d", year, month, day);
   std::string dateStr = temp;
   return dateStr;
+}
+
+bool isComparable(AttrType &left, AttrType &right)
+{
+  if (left == right) {  // 类型完全相同，可以比较
+    return true;
+  } else if (left == INTS && right == FLOATS || right == INTS && left) {  // int和float可以比较
+    return true;
+  }
+  return false;
 }

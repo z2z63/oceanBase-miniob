@@ -24,7 +24,7 @@ class Db;
 class Table;
 class FieldMeta;
 
-struct FilterObj 
+struct FilterObj
 {
   bool is_attr;
   Field field;
@@ -43,7 +43,7 @@ struct FilterObj
   }
 };
 
-class FilterUnit 
+class FilterUnit
 {
 public:
   FilterUnit() = default;
@@ -78,6 +78,16 @@ public:
     return right_;
   }
 
+  /**
+   * 检查两个类型是否能够比较
+   * */
+  bool checkComparable() const
+  {
+    AttrType l = left_.is_attr ? left_.field.attr_type() : left_.value.attr_type();
+    AttrType r = right_.is_attr ? right_.field.attr_type() : right_.value.attr_type();
+    return isComparable(l, r);
+  }
+
 private:
   CompOp comp_ = NO_OP;
   FilterObj left_;
@@ -88,7 +98,7 @@ private:
  * @brief Filter/谓词/过滤语句
  * @ingroup Statement
  */
-class FilterStmt 
+class FilterStmt
 {
 public:
   FilterStmt() = default;
