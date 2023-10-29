@@ -342,7 +342,7 @@ std::string int2date(int dateIntValue)
   int  month = (dateIntValue % 10000) / 100;
   int  day   = dateIntValue % 100;
   char temp[11];
-  snprintf(temp, sizeof(temp), "%d-%d-%d", year, month, day);
+  snprintf(temp, sizeof(temp), "%d-%02d-%02d", year, month, day);
   std::string dateStr = temp;
   return dateStr;
 }
