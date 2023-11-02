@@ -24,7 +24,7 @@ See the Mulan PSL v2 for more details. */
 class Expression;
 
 /**
- * @defgroup SQLParser SQL Parser 
+ * @defgroup SQLParser SQL Parser
  */
 
 /**
@@ -244,6 +244,10 @@ struct ExplainSqlNode
   std::unique_ptr<ParsedSqlNode> sql_node;
 };
 
+struct HelloSqlNode{
+
+};
+
 /**
  * @brief 解析SQL语句出现了错误
  * @ingroup SQLParser
@@ -283,6 +287,7 @@ enum SqlCommandFlag
   SCF_HELP,
   SCF_EXIT,
   SCF_EXPLAIN,
+  SCF_HELLO,
   SCF_SET_VARIABLE, ///< 设置变量
 };
 /**
@@ -306,6 +311,7 @@ public:
   DescTableSqlNode          desc_table;
   LoadDataSqlNode           load_data;
   ExplainSqlNode            explain;
+  HelloSqlNode              hello;
   SetVariableSqlNode        set_variable;
 
 public:

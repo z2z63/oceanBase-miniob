@@ -26,26 +26,27 @@ RC CreateIndexStmt::create(Db *db, const CreateIndexSqlNode &create_index, Stmt 
   stmt = nullptr;
 
   const char *table_name = create_index.relation_name.c_str();
+  // 检查表名，索引名，字段名是否为空
   if (is_blank(table_name) || is_blank(create_index.index_name.c_str()) || is_blank(create_index.attribute_name.c_str())) {
     LOG_WARN("invalid argument. db=%p, table_name=%p, index name=%s, attribute name=%s",
         db, table_name, create_index.index_name.c_str(), create_index.attribute_name.c_str());
     return RC::INVALID_ARGUMENT;
   }
 
-  // check whether the table exists
+  // 检查表是否存在
   Table *table = db->find_table(table_name);
   if (nullptr == table) {
     LOG_WARN("no such table. db=%s, table_name=%s", db->name(), table_name);
     return RC::SCHEMA_TABLE_NOT_EXIST;
   }
-
+  // 检查字段是否存在
   const FieldMeta *field_meta = table->table_meta().field(create_index.attribute_name.c_str());
   if (nullptr == field_meta) {
     LOG_WARN("no such field in table. db=%s, table=%s, field name=%s", 
              db->name(), table_name, create_index.attribute_name.c_str());
     return RC::SCHEMA_FIELD_NOT_EXIST;   
   }
-
+  // 检查索引是否重复
   Index *index = table->find_index(create_index.index_name.c_str());
   if (nullptr != index) {
     LOG_WARN("index with name(%s) already exists. table name=%s", create_index.index_name.c_str(), table_name);

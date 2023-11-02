@@ -27,9 +27,14 @@ class UpdateStmt : public Stmt
 {
 public:
   UpdateStmt() = default;
-  UpdateStmt(Table *table, Value *values, int value_amount);
+  UpdateStmt(Table *table, const Value *values, int value_amount);
+
+  StmtType type() const override;
 
 public:
+  /**
+   * 目前只实现更新一个字段
+   * */
   static RC create(Db *db, const UpdateSqlNode &update_sql, Stmt *&stmt);
 
 public:
@@ -37,7 +42,7 @@ public:
   {
     return table_;
   }
-  Value *values() const
+  const Value *values() const
   {
     return values_;
   }
@@ -48,6 +53,6 @@ public:
 
 private:
   Table *table_ = nullptr;
-  Value *values_ = nullptr;
+  const Value *values_ = nullptr;
   int value_amount_ = 0;
 };

@@ -531,7 +531,7 @@ RC RecordFileScanner::fetch_next_record()
   if (record_page_iterator_.is_valid()) {
     // 当前页面还是有效的，尝试看一下是否有有效记录
     rc = fetch_next_record_in_page();
-    if (rc == RC::SUCCESS || rc != RC::RECORD_EOF) {
+    if (/*rc == RC::SUCCESS ||*/ rc != RC::RECORD_EOF) {
       // 有有效记录：RC::SUCCESS
       // 或者出现了错误，rc != (RC::SUCCESS or RC::RECORD_EOF)
       // RECORD_EOF 表示当前页面已经遍历完了

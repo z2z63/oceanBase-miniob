@@ -100,6 +100,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
         DATE_T
         LIKE
         NOT_LIKE
+        HELLO_FUNCTION
 
 /** union 中定义各种数据类型，真实生成的代码也是union类型，所以不能有非POD类型的数据 **/
 %union {
@@ -168,6 +169,7 @@ ArithmeticExpr *create_arithmetic_expression(ArithmeticExpr::Type type,
 %type <sql_node>            command_wrapper
 // commands should be a list but I use a single command instead
 %type <sql_node>            commands
+%type <sql_node>            hello_stmt
 
 %left '+' '-'
 %left '*' '/'
@@ -202,7 +204,13 @@ command_wrapper:
   | set_variable_stmt
   | help_stmt
   | exit_stmt
+  | hello_stmt
     ;
+
+hello_stmt:
+    SELECT HELLO_FUNCTION {
+      $$ = new ParsedSqlNode(SCF_HELLO);
+    };
 
 exit_stmt:      
     EXIT {

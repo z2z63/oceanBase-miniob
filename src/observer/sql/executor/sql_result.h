@@ -65,6 +65,10 @@ public:
     return state_string_;
   }
 
+  PhysicalOperatorType get_operator_type(){
+    return operator_->type();
+  }
+
   RC open();
   RC close();
   RC next_tuple(Tuple *&tuple);

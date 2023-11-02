@@ -80,6 +80,7 @@ NOT{WHITE_SAPCE}LIKE                    RETURN_TOKEN(NOT_LIKE);     // not likeä
 [\-]?{DIGIT}+                           yylval->number=atoi(yytext); RETURN_TOKEN(NUMBER);
 [\-]?{DIGIT}+{DOT}{DIGIT}+              yylval->floats=(float)(atof(yytext)); RETURN_TOKEN(FLOAT);
 DATE                                    RETURN_TOKEN(DATE_T);
+HELLO\(\)                                 RETURN_TOKEN(HELLO_FUNCTION);
 
 ";"                                     RETURN_TOKEN(SEMICOLON);
 {DOT}                                   RETURN_TOKEN(DOT);
