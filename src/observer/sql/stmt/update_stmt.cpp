@@ -1,7 +1,7 @@
 /* Copyright (c) 2021 OceanBase and/or its affiliates. All rights reserved.
 miniob is licensed under Mulan PSL v2.
-You can use this software according to the terms and conditions of the Mulan PSL v2.
-You may obtain a copy of Mulan PSL v2 at:
+You can use this software according to the terms and conditions of the Mulan PSL
+v2. You may obtain a copy of Mulan PSL v2 at:
          http://license.coscl.org.cn/MulanPSL2
 THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
 EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
@@ -16,10 +16,7 @@ See the Mulan PSL v2 for more details. */
 #include "common/log/log.h"
 #include "storage/db/db.h"
 #include "storage/table/table.h"
-
-UpdateStmt::UpdateStmt(Table *table, const Value *values, int value_amount)
-    : table_(table), values_(values), value_amount_(value_amount)
-{}
+#include "filter_stmt.h"
 
 RC UpdateStmt::create(Db *db, const UpdateSqlNode &update, Stmt *&stmt)
 {
@@ -49,13 +46,25 @@ RC UpdateStmt::create(Db *db, const UpdateSqlNode &update, Stmt *&stmt)
   // 检查字段的类型是否匹配
   const AttrType field_type = field_meta->type();
   if (field_type != value_type) {
-    // TODO: 后续可能需要修改，并不是值类型和字段类型不匹配就不能更新，例如：int和float
+    // TODO:
+    // 后续可能需要修改，并不是值类型和字段类型不匹配就不能更新，例如：int和float
     LOG_WARN("field type mismatch. table=%s, field=%s, field type=%d, value_type=%d",
         table_name, field_meta->name(), field_type, value_type);
     return RC::SCHEMA_FIELD_TYPE_MISMATCH;
   }
 
-  stmt = new UpdateStmt(table, &update.value, 1);
+  // 检查where语句是否合法
+  FilterStmt                              *filter_stmt = nullptr;
+  std::unordered_map<std::string, Table *> table_map   = {{table_name, table}};
+
+  RC rc = FilterStmt::create(
+      db, table, &table_map, update.conditions.data(), (int)update.conditions.size(), filter_stmt);
+  if (rc != RC::SUCCESS) {
+    LOG_WARN("cannot construct filter stmt");
+    return rc;
+  }
+
+  stmt = new UpdateStmt(table, filter_stmt, update.attribute_name, update.value);
   return RC::SUCCESS;
 }
 StmtType UpdateStmt::type() const { return StmtType::UPDATE; }

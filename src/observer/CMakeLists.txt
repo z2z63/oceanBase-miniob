@@ -14,7 +14,10 @@ FOREACH (F ${ALL_SRC})
                 sql/executor/drop_table_executor.cpp
                 sql/executor/drop_table_executor.h
                 sql/stmt/hello_stmt.h
-                sql/executor/hello_executor.h)
+                sql/executor/hello_executor.h
+                sql/operator/update_logical_operator.h
+                sql/operator/update_physical_operator.cpp
+                sql/operator/update_physical_operator.h)
     ENDIF()
 
     MESSAGE("Use " ${F})
